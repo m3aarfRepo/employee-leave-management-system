@@ -9,7 +9,8 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveBalance;
 use App\Models\Team;
 use Carbon\Carbon;
-
+use App\Models\LeaveType;
+use App\Models\User;
 class DashboardController extends Controller
 {
     /**
@@ -35,7 +36,7 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_teams' => Team::count(),
-            'total_employees' => \App\Models\User::where('role', 'employee')->count(),
+            'total_employees' => User::where('role', 'employee')->count(),
             'pending_requests' => LeaveRequest::where('status', 'pending')->count(),
             'approved_requests' => LeaveRequest::where('status', 'approved')->count(),
             'rejected_requests' => LeaveRequest::where('status', 'rejected')->count(),
@@ -53,7 +54,7 @@ class DashboardController extends Controller
             ->get();
 
         // Get all active leave types that have balance
-        $leaveTypes = \App\Models\LeaveType::where('is_active', true)
+        $leaveTypes = LeaveType::where('is_active', true)
             ->where('has_balance', true)
             ->get();
         $year = now()->year;
@@ -68,7 +69,7 @@ class DashboardController extends Controller
         // Build balances array for all leave types
         $leaveBalances = $leaveTypes->map(function ($leaveType) use ($existingBalances) {
             $balance = $existingBalances->get($leaveType->id);
-            
+
             if ($balance) {
                 return [
                     'id' => $balance->id,
@@ -161,7 +162,7 @@ class DashboardController extends Controller
         // Build balances array for all leave types
         $leaveBalances = $leaveTypes->map(function ($leaveType) use ($existingBalances) {
             $balance = $existingBalances->get($leaveType->id);
-            
+
             if ($balance) {
                 return [
                     'id' => $balance->id,
@@ -243,7 +244,7 @@ class DashboardController extends Controller
         // Build balances array for all leave types
         $leaveBalances = $leaveTypes->map(function ($leaveType) use ($existingBalances) {
             $balance = $existingBalances->get($leaveType->id);
-            
+
             if ($balance) {
                 return [
                     'id' => $balance->id,
